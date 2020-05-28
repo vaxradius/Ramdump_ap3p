@@ -12,6 +12,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#define START_ADDR 0x10000000
+#define TOTAL_LENGTH (30*1024)
 //*****************************************************************************
 //
 // Ramdump task handle.
@@ -29,12 +31,15 @@ RamdumpTask(void *pvParameters)
 {
 	uint32_t numWritten = 0;
 	uint32_t ui32UsedSpace = 0;
+	uint32_t ui32LeftSpace = 0;
+	uint32_t ui32TotalSent = 0;
 	uint32_t ulNotifiedValue;
-
-	uint8_t u8data[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 	Ramdump_task_handle = xTaskGetCurrentTaskHandle();
 
+	/*Dummy Patterns in SRAM for checking in Host*/
+	for(int i=1; i<256; i++)
+		*((uint8_t *)(START_ADDR+TOTAL_LENGTH-i))=i;
     //
     // Loop forever.
     //
@@ -46,22 +51,26 @@ RamdumpTask(void *pvParameters)
 				&ulNotifiedValue, /* Notified value pass out in ulNotifiedValue. */
 				portMAX_DELAY );  /* Block indefinitely. */
 		
+		while(ui32TotalSent < TOTAL_LENGTH)
+		{
+			am_hal_ios_fifo_space_left(g_pIOSHandle, &ui32LeftSpace);
 
-		//am_hal_gpio_out_bit_clear(8);
-		//am_hal_gpio_out_bit_set(8);
-		
-		am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)u8data, 16, &numWritten);
-
-        // If we were Idle - need to inform Host if there is new data
-        if (g_iosState == AM_IOSTEST_SLAVE_STATE_NODATA)
-        {
-            am_hal_ios_fifo_space_used(g_pIOSHandle, &ui32UsedSpace);
-            if (ui32UsedSpace)
-            {
-                g_iosState = AM_IOSTEST_SLAVE_STATE_DATA;
-                inform_host();
-            }
-        }
+			if(ui32LeftSpace >= 512)
+			{
+				am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)(START_ADDR+ui32TotalSent), (ui32TotalSent+512<=TOTAL_LENGTH? 512:(512-((ui32TotalSent+512)-TOTAL_LENGTH))), &numWritten);
+				ui32TotalSent += numWritten;
+			}
+	        // If we were Idle - need to inform Host if there is new data
+	        if (g_iosState == AM_IOSTEST_SLAVE_STATE_NODATA)
+	        {
+	            am_hal_ios_fifo_space_used(g_pIOSHandle, &ui32UsedSpace);
+	            if (ui32UsedSpace)
+	            {
+	                g_iosState = AM_IOSTEST_SLAVE_STATE_DATA;
+	                inform_host();
+	            }
+	        }
+		}
         
        
     }
