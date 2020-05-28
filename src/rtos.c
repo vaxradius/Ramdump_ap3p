@@ -60,7 +60,7 @@
 #include "portmacro.h"
 #include "portable.h"
 
-#include "audio_task.h"
+#include "Ramdump_task.h"
 
 //*****************************************************************************
 //
@@ -176,11 +176,8 @@ setup_task(void *pvParameters)
     //
     // Create the functional tasks
     //
-#ifdef RELAJET
-    xTaskCreate(AudioTask, "AudioTask", 1024*15, 0, 3, &audio_task_handle);
-#else
-	xTaskCreate(AudioTask, "AudioTask", 512, 0, 3, &audio_task_handle);
-#endif
+	xTaskCreate(RamdumpTask, "RamdumpTask", 512, 0, 3, &Ramdump_task_handle);
+
     //
     // The setup operations are complete, so suspend the setup task now.
     //

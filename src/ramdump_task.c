@@ -14,10 +14,10 @@
 
 //*****************************************************************************
 //
-// Audio task handle.
+// Ramdump task handle.
 //
 //*****************************************************************************
-TaskHandle_t audio_task_handle;
+TaskHandle_t Ramdump_task_handle;
 
 //*****************************************************************************
 //
@@ -25,13 +25,13 @@ TaskHandle_t audio_task_handle;
 //
 //*****************************************************************************
 void
-AudioTask(void *pvParameters)
+RamdumpTask(void *pvParameters)
 {
 	uint32_t numWritten = 0;
 	uint32_t ui32UsedSpace = 0;
 	uint32_t ulNotifiedValue;
 
-	audio_task_handle = xTaskGetCurrentTaskHandle();
+	Ramdump_task_handle = xTaskGetCurrentTaskHandle();
 
     //
     // Loop forever.

@@ -393,9 +393,9 @@
               <FilePath>..\src\rtos.c</FilePath>
             </File>
             <File>
-              <FileName>audio_task.c</FileName>
+              <FileName>ramdump_task.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\audio_task.c</FilePath>
+              <FilePath>..\src\ramdump_task.c</FilePath>
             </File>
           </Files>
         </Group>

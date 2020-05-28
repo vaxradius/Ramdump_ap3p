@@ -1,5 +1,5 @@
-#ifndef AUDIO_TASK_H
-#define AUDIO_TASK_H
+#ifndef RAMDUMP_TASK_H
+#define RAMDUMP_TASK_H
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -9,14 +9,14 @@
 // Audio task handle.
 //
 //*****************************************************************************
-extern TaskHandle_t audio_task_handle;
+extern TaskHandle_t Ramdump_task_handle;
 
 //*****************************************************************************
 //
 // External function definitions.
 //
 //*****************************************************************************
-extern void AudioTask(void *pvParameters);
+extern void RamdumpTask(void *pvParameters);
 
-#endif // AUDIO_TASK_H
+#endif // RAMDUMP_TASK_H
 
