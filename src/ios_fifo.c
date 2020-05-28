@@ -5,7 +5,7 @@
 //! SPI:
 //!     HOST (AP3 as MT2523)                    SLAVE (AP3)
 //!     --------------------                    ----------------
-//!     GPIO[10] GPIO Interrupt (slave to host) GPIO[4]  GPIO interrupt
+//!     GPIO[40] GPIO Interrupt (slave to host) GPIO[4]  GPIO interrupt
 //!     GPIO[5]  IOM0 SPI SCK                   GPIO[0]  IOS SPI SCK
 //!     GPIO[7]  IOM0 SPI MOSI                  GPIO[1]  IOS SPI MOSI
 //!     GPIO[6]  IOM0 SPI MISO                  GPIO[2]  IOS SPI MISO
@@ -58,6 +58,7 @@
 #include "am_util.h"
 
 #include "ios_fifo.h"
+#include "ramdump_task.h"
 
 #define     TEST_IOS_XCMP_INT   1
 
@@ -171,6 +172,8 @@ static void ios_set_up(void)
     // Set the bit in the NVIC to accept access interrupts from the IO Slave.
     //
     NVIC_EnableIRQ(IOSLAVE_IRQn);
+	NVIC_SetPriority(IOSLAVE_IRQn, NVIC_configMAX_SYSCALL_INTERRUPT_PRIORITY);
+
 
     // Set up the IOSINT interrupt pin
     am_hal_gpio_pinconfig(4, g_AM_BSP_GPIO_ENABLE);
@@ -198,6 +201,7 @@ void am_ioslave_ios_isr(void)
     uint32_t ui32Status;
     uint8_t  *pui8Packet;
     uint32_t ui32UsedSpace = 0;
+	BaseType_t xHigherPriorityTaskWoken;
 
     //
     // Check to see what caused this interrupt, then clear the bit from the
@@ -244,7 +248,9 @@ void am_ioslave_ios_isr(void)
         switch(pui8Packet[0])
         {
             case AM_IOSTEST_CMD_START_DATA:
-				
+				xHigherPriorityTaskWoken = pdFALSE;
+				xTaskNotifyFromISR(Ramdump_task_handle, 1, eSetBits, &xHigherPriorityTaskWoken);
+				portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
                 break;
 
             case AM_IOSTEST_CMD_STOP_DATA:

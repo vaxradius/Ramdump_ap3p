@@ -31,6 +31,8 @@ RamdumpTask(void *pvParameters)
 	uint32_t ui32UsedSpace = 0;
 	uint32_t ulNotifiedValue;
 
+	uint8_t u8data[16] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
 	Ramdump_task_handle = xTaskGetCurrentTaskHandle();
 
     //
@@ -48,7 +50,7 @@ RamdumpTask(void *pvParameters)
 		//am_hal_gpio_out_bit_clear(8);
 		//am_hal_gpio_out_bit_set(8);
 		
-		//am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)g_i16PDMBuf[(u32PDMpg-1)%2], BUF_SIZE*2/4, &numWritten);
+		am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)u8data, 16, &numWritten);
 
         // If we were Idle - need to inform Host if there is new data
         if (g_iosState == AM_IOSTEST_SLAVE_STATE_NODATA)
