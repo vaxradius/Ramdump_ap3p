@@ -388,11 +388,6 @@
               <FilePath>../src/ios_fifo.c</FilePath>
             </File>
             <File>
-              <FileName>AudioDriver.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\AudioDriver.c</FilePath>
-            </File>
-            <File>
               <FileName>rtos.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\rtos.c</FilePath>

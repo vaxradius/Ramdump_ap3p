@@ -57,12 +57,7 @@
 #include "am_bsp.h"
 #include "am_util.h"
 
-#include "audiodriver.h"
-#include "sbc.h"
-#include "RelaJet.h"
 #include "ios_fifo.h"
-
-#define  FW_VER	2
 
 #define     TEST_IOS_XCMP_INT   1
 
@@ -249,7 +244,7 @@ void am_ioslave_ios_isr(void)
         switch(pui8Packet[0])
         {
             case AM_IOSTEST_CMD_START_DATA:
-				pdm_init();
+				
                 break;
 
             case AM_IOSTEST_CMD_STOP_DATA:
@@ -278,27 +273,6 @@ void am_ioslave_ios_isr(void)
     }
 }
 
-static void VersionConfig(void)
-{
-#ifdef RELAJET
-	int16_t ret;
-	int16_t LibVer;
-
-	/*return 1 means Licence key verification is OK */
-	ret = getVersion(&LibVer);
-	if(ret == 1)
-		*(int16_t *)(am_hal_ios_pui8LRAM+6) = LibVer;// Relajet NR Version
-	else
-		*(int16_t *)(am_hal_ios_pui8LRAM+6) = -1;// Licence key verification failed
-
-#else
-	*(int16_t *)(am_hal_ios_pui8LRAM+6) = 0;//Without Relajet NR
-#endif
-	*(int16_t *)(am_hal_ios_pui8LRAM+4) = FW_VER;
-
-}
-
-#if 1
 //*****************************************************************************
 //
 // Main function.
@@ -337,7 +311,6 @@ int main(void)
     // Enable the IOS
     //
     ios_set_up();
-    VersionConfig();
 
     //
     // Enable interrupts so we can receive messages from the boot host.
@@ -358,98 +331,4 @@ int main(void)
     }
 
 }
-#else
-//*****************************************************************************
-//
-// Main function.
-//
-//*****************************************************************************
-int main(void)
-{
-    am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_SYSCLK_MAX, 0);
-
-    //
-    // Set the default cache configuration
-    //
-    am_hal_cachectrl_config(&am_hal_cachectrl_defaults);
-    am_hal_cachectrl_enable();
-
-    //
-    // Configure the board for low power operation.
-    //
-    am_bsp_low_power_init();
-
-    //
-    // Enable the ITM print interface.
-    //
-    am_bsp_itm_printf_enable();
-
-    //
-    // Clear the terminal and print the banner.
-    //
-    am_util_stdio_terminal_clear();
-	
-	//am_util_stdio_printf("IOS FIFO Example\n");
-
-	SBC_init();
-	
-    //
-    // Enable the IOS
-    //
-    ios_set_up();
-    VersionConfig();
-
-    //
-    // Enable interrupts so we can receive messages from the boot host.
-    //
-    am_hal_interrupt_master_enable();
-
-    //
-    // Loop forever.
-    //
-    while(1)
-    {
-		uint32_t numWritten = 0;
-		uint32_t ui32UsedSpace = 0;
-		uint32_t u32PDMpg;
-		
-		uint32_t ui32IntStatus = am_hal_interrupt_master_disable();
-		if (g_bPDMDataReady)
-		{
-			g_bPDMDataReady = false;
-			u32PDMpg = g_u32PDMPingpong;
-			// Enable the interrupts
-			am_hal_interrupt_master_set(ui32IntStatus);
-			//am_hal_gpio_out_bit_clear(8);
-#ifdef RELAJET	
-			NR_process(g_i16PDMBuf[(u32PDMpg-1)%2]);
-#endif
-			SBC_process((int8_t*)(g_i16PDMBuf[(u32PDMpg-1)%2]));
-
-			//am_hal_gpio_out_bit_set(8);
-			am_hal_ios_fifo_write(g_pIOSHandle, (uint8_t *)g_i16PDMBuf[(u32PDMpg-1)%2], BUF_SIZE*2/4, &numWritten);
-
-            // If we were Idle - need to inform Host if there is new data
-            if (g_iosState == AM_IOSTEST_SLAVE_STATE_NODATA)
-            {
-                am_hal_ios_fifo_space_used(g_pIOSHandle, &ui32UsedSpace);
-                if (ui32UsedSpace)
-                {
-                    g_iosState = AM_IOSTEST_SLAVE_STATE_DATA;
-                    inform_host();
-                }
-            }
-        }
-        else
-        {
-            //
-            // Go to Deep Sleep.
-            //
-            am_hal_sysctrl_sleep(AM_HAL_SYSCTRL_SLEEP_NORMAL);
-            // Enable the interrupts
-            am_hal_interrupt_master_set(ui32IntStatus);
-        }
-    }
-}
-#endif
 
