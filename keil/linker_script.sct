@@ -3,9 +3,9 @@
 ; Scatter file for Keil linker configuration.
 ;
 ;******************************************************************************
-LR_1 0x0000C000
+LR_1 0x00010000
 {
-    ROMEM 0x0000C000 0x001F4000
+    ROMEM 0x00010000 0x001F0000
     {
         *.o (RESET, +First)
         * (+RO)

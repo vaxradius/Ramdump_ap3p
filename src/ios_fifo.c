@@ -59,6 +59,7 @@
 
 #include "ios_fifo.h"
 #include "ramdump_task.h"
+#include "fault_data.h"
 
 #define     TEST_IOS_XCMP_INT   1
 
@@ -286,7 +287,9 @@ void am_ioslave_ios_isr(void)
 //*****************************************************************************
 int main(void)
 {
-    am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_SYSCLK_MAX, 0);
+	uint32_t *pu32MagicNum = (uint32_t *)AM_RAMDUMP_MAGIC_NUM_START_ADDR;
+	
+	am_hal_clkgen_control(AM_HAL_CLKGEN_CONTROL_SYSCLK_MAX, 0);
 
     //
     // Set the default cache configuration
@@ -304,13 +307,10 @@ int main(void)
     //
     am_bsp_itm_printf_enable();
 
-    //
-    // Clear the terminal and print the banner.
-    //
-    am_util_stdio_terminal_clear();
-	
-	//am_util_stdio_printf("IOS FIFO Example\n");
-
+	am_util_stdio_printf("Ramdump Application FW\n");
+	am_util_stdio_printf("%x %x %x %x\n", *pu32MagicNum, *(pu32MagicNum+1), *(pu32MagicNum+2), *(pu32MagicNum+3));
+	/*Clear magic number0*/
+	*pu32MagicNum = 0;
 	
 	
     //

@@ -5,6 +5,13 @@
 extern "C" {
 #endif
 
+#define AM_RAMDUMP_MAGIC_NUM0 0x48EAAD88
+#define AM_RAMDUMP_MAGIC_NUM1 0xC9705737
+#define AM_RAMDUMP_MAGIC_NUM2 0x0A6B8458
+#define AM_RAMDUMP_MAGIC_NUM3 0xE41A9D74
+#define AM_RAMDUMP_MAGIC_NUM_SIZE (4*4)
+#define AM_RAMDUMP_MAGIC_NUM_START_ADDR (SRAM_BASEADDR+(768*1024)-AM_RAMDUMP_MAGIC_NUM_SIZE)
+
 //*****************************************************************************
 //
 // Data structures

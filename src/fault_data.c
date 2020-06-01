@@ -222,6 +222,7 @@ getStackedReg(uint32_t regnum, uint32_t u32SP)
 void
 am_util_faultisr_collect_data(uint32_t u32IsrSP)
 {
+	uint32_t *pu32MagicNum = (uint32_t *)AM_RAMDUMP_MAGIC_NUM_START_ADDR;
 	sFaultData.u32SP = u32IsrSP;
 	//
     // Following is a brief overview of fault information provided by the M4.
@@ -304,6 +305,11 @@ am_util_faultisr_collect_data(uint32_t u32IsrSP)
 #else // AM_APOLLO3_MCUCTRL
     am_hal_mcuctrl_fault_status(&sHalFaultData);
 #endif // AM_APOLLO3_MCUCTRL
+
+	*pu32MagicNum = AM_RAMDUMP_MAGIC_NUM0;
+	*(pu32MagicNum+1) = AM_RAMDUMP_MAGIC_NUM1;
+	*(pu32MagicNum+2) = AM_RAMDUMP_MAGIC_NUM2;
+	*(pu32MagicNum+3) = AM_RAMDUMP_MAGIC_NUM3;
 
 	/* Save the first 128KB RAM data to the flash(0xA0000~0xBFFFF) */
 	if(storage_erase(FLASH_START_ADDRESS, RAM_SIZE) == 0)
