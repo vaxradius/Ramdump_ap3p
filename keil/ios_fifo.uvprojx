@@ -402,6 +402,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\fault_data.c</FilePath>
             </File>
+            <File>
+              <FileName>am_storage.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\am_storage.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

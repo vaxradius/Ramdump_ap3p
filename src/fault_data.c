@@ -53,13 +53,21 @@
 #include <stdint.h>
 #include "am_mcu_apollo.h"
 #include "am_util_regdump.h"
+
 #include "fault_data.h"
+#include "am_storage.h"
 
 //*****************************************************************************
 //
 // Macros
 //
 //*****************************************************************************
+
+#define RAM_START_ADDRESS 0x10000000
+#define RAM_SIZE (128*1024)
+
+/* Save the first 128KB RAM data in the end of flash */
+#define FLASH_START_ADDRESS (768*1024 - RAM_SIZE)
 
 //
 // Macros used by am_util_faultisr_collect_data().
@@ -297,12 +305,14 @@ am_util_faultisr_collect_data(uint32_t u32IsrSP)
     am_hal_mcuctrl_fault_status(&sHalFaultData);
 #endif // AM_APOLLO3_MCUCTRL
 
+	/* Save the first 128KB RAM data to the flash(0xA0000~0xBFFFF) */
+	if(storage_erase(FLASH_START_ADDRESS, RAM_SIZE) == 0)
+		storage_write(FLASH_START_ADDRESS, (const void *)RAM_START_ADDRESS, RAM_SIZE);
 
-    //
-    // Spin in an infinite loop.
-    // We need to spin here inside the function so that we have access to
-    // local data, i.e. sFaultData.
-    //
+	/*Reset*/
+	am_hal_reset_control(AM_HAL_RESET_CONTROL_SWPOI, 0);
+
+    //Never reach here
     while(1)
     {
     }
