@@ -249,7 +249,7 @@ void am_ioslave_ios_isr(void)
         {
             case AM_IOSTEST_CMD_START_DATA:
 				xHigherPriorityTaskWoken = pdFALSE;
-				xTaskNotifyFromISR(Ramdump_task_handle, 1, eSetBits, &xHigherPriorityTaskWoken);
+				xTaskNotifyFromISR(Ramdump_task_handle, IOS_INT_NOTIFICATION, eSetBits, &xHigherPriorityTaskWoken);
 				portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
                 break;
 
