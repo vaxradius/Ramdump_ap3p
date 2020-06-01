@@ -372,7 +372,7 @@
             <ScatterFile>.\linker_script.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>../../../../../mcu/apollo3p/hal/keil/bin/libam_hal.lib(am_hal_global.o) --keep=am_hal_global.o(.data) </Misc>
+            <Misc>../../../../../mcu/apollo3p/hal/keil/bin/libam_hal.lib(am_hal_global.o) --keep=am_hal_global.o(.data)</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -397,6 +397,11 @@
               <FileType>1</FileType>
               <FilePath>..\src\ramdump_task.c</FilePath>
             </File>
+            <File>
+              <FileName>fault_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\fault_data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -411,11 +416,6 @@
               <FileName>am_util_stdio.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../../../../utils/am_util_stdio.c</FilePath>
-            </File>
-            <File>
-              <FileName>am_util_faultisr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\utils\am_util_faultisr.c</FilePath>
             </File>
           </Files>
         </Group>
