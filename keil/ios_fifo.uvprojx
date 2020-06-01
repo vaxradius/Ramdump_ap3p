@@ -412,6 +412,11 @@
               <FileType>1</FileType>
               <FilePath>../../../../../utils/am_util_stdio.c</FilePath>
             </File>
+            <File>
+              <FileName>am_util_faultisr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\utils\am_util_faultisr.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
